@@ -81,12 +81,18 @@ def parse_gemini(result: dict) -> dict:
     thinking_parts = []
     text_parts = []
     for p in parts:
-        # Gemini 新版本有明确的 thought 字段；其他字段一律视为正文。
-        thought = p.get("thought") or p.get("thinking")
-        if thought:
-            thinking_parts.append(thought)
-        else:
-            text_parts.append(p.get("text", ""))
+        # Gemini 的 thought 通常是布尔标记，真正的内容仍在 text 字段里。
+        text = p.get("text", "")
+        if p.get("thought") is True:
+            if text:
+                thinking_parts.append(text)
+            continue
+        thinking = p.get("thinking")
+        if isinstance(thinking, str) and thinking:
+            thinking_parts.append(thinking)
+            continue
+        if isinstance(text, str) and text:
+            text_parts.append(text)
     return {
         "reasoning_content": "\n".join(thinking_parts).strip(),
         "output": "".join(text_parts).strip(),
@@ -227,6 +233,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", "0")
             self.end_headers()
             return
+        if self.path == "/api/config":
+            return self._send_json(200, apikey.export_public_config())
         if self.path in ("/V1", "/v1"):
             return self._send_html(ROOT / "frontend_v1.html")
         if self.path in ("/", "/V2", "/v2"):
@@ -284,6 +292,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if cfg:
             apikey.save_config(cfg)
+            apikey.apply_runtime_config(cfg)
         self._send_json(200, {"saved": list(cfg.keys())})
 
 

@@ -272,8 +272,8 @@
         <option value="anthropic">Anthropic Claude 原生</option>
       </select>
       <input id="apiKey" type="password" placeholder="API Key">
-      <input id="apiBase" placeholder="API Base URL" value="https://api.deepseek.com">
-      <input id="model" placeholder="Model" value="deepseek-chat">
+      <input id="apiBase" placeholder="API Base URL">
+      <input id="model" placeholder="Model">
       <div class="config-row">
         <button id="saveConfig" class="btn-sm">保存配置</button>
       </div>
@@ -376,6 +376,20 @@
     function applyPreset() {
       const p = PRESETS[els.apiType.value];
       if (p) { els.apiBase.value = p.base; els.model.value = p.model; }
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch("/api/config");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "加载失败");
+        if (data.api_type) els.apiType.value = data.api_type;
+        if (data.api_base) els.apiBase.value = data.api_base;
+        if (data.model) els.model.value = data.model;
+        els.apiKey.placeholder = data.has_api_key ? "已保存 API Key；留空则沿用服务端配置" : "API Key";
+      } catch (e) {
+        applyPreset();
+      }
     }
 
     els.apiType.addEventListener("change", applyPreset);
@@ -481,7 +495,7 @@
       els.status.textContent = "历史已清空";
     });
 
-    applyPreset();
+    loadConfig();
     renderHistory();
   </script>
 </body>

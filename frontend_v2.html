@@ -317,11 +317,11 @@
         </div>
         <div class="field">
           <label for="model">模型</label>
-          <input id="model" value="deepseek-chat">
+          <input id="model">
         </div>
         <div class="field">
           <label for="apiBase">接口地址</label>
-          <input id="apiBase" value="https://api.deepseek.com">
+          <input id="apiBase">
         </div>
         <div class="field">
           <label for="apiKey">API Key</label>
@@ -446,6 +446,20 @@
     function applyPreset() {
       const p = PRESETS[els.apiType.value];
       if (p) { els.apiBase.value = p.base; els.model.value = p.model; }
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch("/api/config");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "加载失败");
+        if (data.api_type) els.apiType.value = data.api_type;
+        if (data.api_base) els.apiBase.value = data.api_base;
+        if (data.model) els.model.value = data.model;
+        els.apiKey.placeholder = data.has_api_key ? "已保存 API Key；留空则沿用服务端配置" : "可在下方保存后持久化";
+      } catch (e) {
+        applyPreset();
+      }
     }
 
     els.apiType.addEventListener("change", applyPreset);
@@ -578,7 +592,7 @@
       showStatus("历史已清空", "ok");
     });
 
-    applyPreset();
+    loadConfig();
     renderHistory();
   </script>
 </body>
