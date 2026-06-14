@@ -10,7 +10,13 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
-from style_prompt import build_prompt
+from style_prompt import (
+    build_prompt,
+    delete_prompt,
+    export_prompt_config,
+    save_prompt,
+    set_default_prompt,
+)
 import apikey
 
 ROOT = Path(__file__).parent
@@ -207,6 +213,9 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
+    def _send_prompt_config_error(self, exc: Exception) -> None:
+        self._send_json(500, {"error": f"提示词配置不可用：{exc}"})
+
     def _read_json_body(self) -> tuple[dict | None, str | None]:
         """统一读取 JSON 请求体，带上限和格式校验。"""
         try:
@@ -235,6 +244,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/api/config":
             return self._send_json(200, apikey.export_public_config())
+        if self.path == "/api/prompts":
+            try:
+                return self._send_json(200, export_prompt_config())
+            except (OSError, ValueError) as exc:
+                return self._send_prompt_config_error(exc)
         if self.path in ("/V1", "/v1"):
             return self._send_html(ROOT / "frontend_v1.html")
         if self.path in ("/", "/V2", "/v2"):
@@ -246,6 +260,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._handle_generate()
         if self.path == "/api/config":
             return self._handle_config()
+        if self.path == "/api/prompts/save":
+            return self._handle_save_prompt()
+        if self.path == "/api/prompts/activate":
+            return self._handle_activate_prompt()
+        if self.path == "/api/prompts/delete":
+            return self._handle_delete_prompt()
         return self._send_json(404, {"error": "路径不存在"})
 
     def _handle_generate(self) -> None:
@@ -258,13 +278,17 @@ class Handler(BaseHTTPRequestHandler):
         if not command:
             return self._send_json(400, {"error": "command 不能为空"})
 
-        result = call_llm(
-            command=command,
-            api_key=data.get("api_key") or None,
-            api_base=data.get("api_base") or None,
-            api_type=data.get("api_type") or None,
-            model=data.get("model") or None,
-        )
+        try:
+            result = call_llm(
+                command=command,
+                api_key=data.get("api_key") or None,
+                api_base=data.get("api_base") or None,
+                api_type=data.get("api_type") or None,
+                model=data.get("model") or None,
+            )
+            prompt = build_prompt(command)
+        except (OSError, ValueError) as exc:
+            return self._send_prompt_config_error(exc)
 
         if "error" in result:
             return self._send_json(502, result)
@@ -272,7 +296,7 @@ class Handler(BaseHTTPRequestHandler):
         self._send_json(
             200,
             {
-                "prompt": build_prompt(command),
+                "prompt": prompt,
                 "reasoning_content": result.get("reasoning_content", ""),
                 "output": result.get("output", ""),
             },
@@ -287,13 +311,72 @@ class Handler(BaseHTTPRequestHandler):
         cfg = {}
         for k in ("API_TYPE", "API_BASE", "API_KEY", "MODEL"):
             val = data.get(k.lower())
-            if val and isinstance(val, str):
+            if isinstance(val, str):
                 cfg[k] = val.strip()
 
         if cfg:
             apikey.save_config(cfg)
             apikey.apply_runtime_config(cfg)
         self._send_json(200, {"saved": list(cfg.keys())})
+
+    def _handle_save_prompt(self) -> None:
+        data, err = self._read_json_body()
+        if err:
+            return self._send_json(400, {"error": err})
+        assert data is not None
+
+        try:
+            result = save_prompt(
+                prompt_id=str(data.get("prompt_id") or "").strip() or None,
+                content=str(data.get("content") or ""),
+                name=str(data.get("name") or "").strip() or None,
+                create_new=bool(data.get("create_new")),
+            )
+        except ValueError as exc:
+            return self._send_json(400, {"error": str(exc)})
+        except OSError as exc:
+            return self._send_prompt_config_error(exc)
+
+        try:
+            self._send_json(200, {"saved": result, "config": export_prompt_config()})
+        except (OSError, ValueError) as exc:
+            return self._send_prompt_config_error(exc)
+
+    def _handle_activate_prompt(self) -> None:
+        data, err = self._read_json_body()
+        if err:
+            return self._send_json(400, {"error": err})
+        assert data is not None
+
+        try:
+            prompt = set_default_prompt(str(data.get("prompt_id") or "").strip())
+        except ValueError as exc:
+            return self._send_json(400, {"error": str(exc)})
+        except OSError as exc:
+            return self._send_prompt_config_error(exc)
+
+        try:
+            self._send_json(200, {"active_prompt": prompt, "config": export_prompt_config()})
+        except (OSError, ValueError) as exc:
+            return self._send_prompt_config_error(exc)
+
+    def _handle_delete_prompt(self) -> None:
+        data, err = self._read_json_body()
+        if err:
+            return self._send_json(400, {"error": err})
+        assert data is not None
+
+        try:
+            prompt = delete_prompt(str(data.get("prompt_id") or "").strip())
+        except ValueError as exc:
+            return self._send_json(400, {"error": str(exc)})
+        except OSError as exc:
+            return self._send_prompt_config_error(exc)
+
+        try:
+            self._send_json(200, {"deleted_prompt": prompt, "config": export_prompt_config()})
+        except (OSError, ValueError) as exc:
+            return self._send_prompt_config_error(exc)
 
 
 def _kill_port(port: int) -> None:

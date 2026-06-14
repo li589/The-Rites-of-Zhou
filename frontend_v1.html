@@ -8,6 +8,7 @@
   <style>
     :root {
       --bg: #fafafa;
+      --panel: #ffffff;
       --text: #333;
       --muted: #888;
       --border: #ddd;
@@ -15,6 +16,7 @@
       --accent-hover: #000;
       --danger: #a33a2b;
       --ok: #1f7a4d;
+      --shadow: 0 12px 36px rgba(0, 0, 0, 0.14);
     }
 
     * {
@@ -30,7 +32,7 @@
     }
 
     .wrap {
-      max-width: 640px;
+      max-width: 680px;
       margin: 0 auto;
       padding: 60px 20px 40px;
     }
@@ -83,6 +85,68 @@
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    .btn-secondary,
+    .btn-sm,
+    .btn-ghost,
+    .btn-danger {
+      background: var(--bg);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover,
+    .btn-sm:hover,
+    .btn-ghost:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      color: var(--danger);
+      border-color: #e8b4ae;
+      background: #fff6f5;
+    }
+
+    .btn-danger:hover {
+      background: #fde7e4;
+      color: #7d291f;
+    }
+
+    .toolbar {
+      display: inline;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .prompt-meta {
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .output-wrap {
@@ -152,12 +216,6 @@
       display: block;
     }
 
-    .status {
-      margin-top: 8px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
     .history-bar {
       display: flex;
       align-items: center;
@@ -178,17 +236,9 @@
       padding: 6px 10px;
     }
 
-    .history-bar .btn-sm {
+    .btn-sm {
       font-size: 12px;
       padding: 4px 12px;
-      background: var(--bg);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .history-bar .btn-sm:hover {
-      background: var(--border);
-      color: var(--text);
     }
 
     details {
@@ -209,37 +259,134 @@
       padding: 6px 10px;
     }
 
-    details select {
-      font: inherit;
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: #fff;
-      color: var(--text);
-      outline: none;
-    }
-
     .config-row {
       display: flex;
       gap: 8px;
       align-items: center;
     }
 
-    details .btn-sm {
-      font-size: 12px;
-      padding: 4px 12px;
+    dialog {
+      border: 0;
+      border-radius: 14px;
+      padding: 0;
+      width: min(760px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      background: transparent;
     }
 
-    .btn-secondary {
-      background: var(--bg);
-      color: var(--muted);
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .prompt-dialog {
+      background: var(--panel);
       border: 1px solid var(--border);
-      margin-left: 8px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    .btn-secondary:hover {
-      background: var(--border);
+    .prompt-dialog__head,
+    .prompt-dialog__foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prompt-dialog__foot {
+      border-top: 1px solid var(--border);
+      border-bottom: 0;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .prompt-dialog__body {
+      padding: 16px;
+      background: #fff;
+    }
+
+    .prompt-dialog__title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .prompt-dialog__title h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .prompt-dialog__title p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .prompt-field {
+      margin-bottom: 12px;
+    }
+
+    .prompt-field label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .prompt-editor {
+      min-height: 320px;
+      line-height: 1.6;
+      font-family: Consolas, "Microsoft YaHei UI", monospace;
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    .helper-text {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .inline-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      padding: 6px 10px;
+      line-height: 1;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg);
       color: var(--text);
+    }
+
+    @media (max-width: 640px) {
+      .history-bar {
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+
+      .prompt-dialog__head,
+      .prompt-dialog__foot {
+        align-items: stretch;
+      }
+
+      .prompt-dialog__head {
+        flex-direction: column;
+      }
+
+      .prompt-dialog__foot {
+        justify-content: stretch;
+      }
     }
   </style>
 </head>
@@ -250,7 +397,11 @@
     <textarea id="command" placeholder="输入你想说的话..."></textarea>
     <button id="send">生成回应</button>
     <button id="exampleInput" class="btn-secondary" type="button">范例输入</button>
-    <span class="status" id="status"></span>
+    <div class="toolbar">
+      <button id="openPromptDialog" class="btn-secondary" type="button">提示词设置</button>
+      <span class="prompt-meta" id="activePromptName">当前提示词：加载中</span>
+    </div>
+    <div class="status" id="status"></div>
 
     <div class="output-wrap">
       <div class="output" id="output"></div>
@@ -280,6 +431,45 @@
     </details>
   </div>
 
+  <dialog id="promptDialog">
+    <div class="prompt-dialog">
+      <div class="prompt-dialog__head">
+        <div class="prompt-dialog__title">
+          <h2>提示词设置</h2>
+          <p>修改默认提示词时会自动新建一条历史提示词，并切换为默认使用。</p>
+        </div>
+        <button id="closePromptDialog" class="icon-btn" type="button">关闭</button>
+      </div>
+      <div class="prompt-dialog__body">
+        <div class="prompt-field">
+          <label for="promptHistory">历史提示词</label>
+          <select id="promptHistory"></select>
+        </div>
+        <div class="prompt-field">
+          <label for="promptName">提示词名称</label>
+          <input id="promptName" placeholder="例如：默认提示词 / 温和版 / 强硬版">
+        </div>
+        <div class="prompt-field">
+          <label for="promptEditor">提示词内容</label>
+          <textarea id="promptEditor" class="prompt-editor"></textarea>
+          <div class="helper-text" id="promptHelper">建议保留占位符 `{{user_request}}` 指定用户输入插入位置；若删除，占位内容会自动追加到末尾。</div>
+        </div>
+      </div>
+      <div class="prompt-dialog__foot">
+        <div class="inline-actions">
+          <button id="activatePrompt" class="btn-ghost" type="button">设为默认</button>
+          <button id="restoreBuiltinPrompt" class="btn-ghost" type="button">恢复默认</button>
+          <button id="resetPromptDraft" class="btn-ghost" type="button">重置编辑</button>
+        </div>
+        <div class="inline-actions">
+          <button id="duplicatePrompt" class="btn-secondary" type="button">另存新提示词</button>
+          <button id="deletePrompt" class="btn-danger" type="button">删除</button>
+          <button id="savePrompt" type="button">保存并使用</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <script>
     const els = {
       command: document.getElementById("command"),
@@ -296,12 +486,26 @@
       historySelect: document.getElementById("historySelect"),
       clearHistory: document.getElementById("clearHistory"),
       exampleInput: document.getElementById("exampleInput"),
+      openPromptDialog: document.getElementById("openPromptDialog"),
+      closePromptDialog: document.getElementById("closePromptDialog"),
+      promptDialog: document.getElementById("promptDialog"),
+      activePromptName: document.getElementById("activePromptName"),
+      promptHistory: document.getElementById("promptHistory"),
+      promptName: document.getElementById("promptName"),
+      promptEditor: document.getElementById("promptEditor"),
+      promptHelper: document.getElementById("promptHelper"),
+      activatePrompt: document.getElementById("activatePrompt"),
+      restoreBuiltinPrompt: document.getElementById("restoreBuiltinPrompt"),
+      resetPromptDraft: document.getElementById("resetPromptDraft"),
+      duplicatePrompt: document.getElementById("duplicatePrompt"),
+      deletePrompt: document.getElementById("deletePrompt"),
+      savePrompt: document.getElementById("savePrompt"),
     };
 
     const PRESETS = {
-      openai:    { base: "https://api.deepseek.com",   model: "deepseek-chat" },
-      gemini:    { base: "https://generativelanguage.googleapis.com", model: "gemini-2.5-flash" },
-      anthropic: { base: "https://api.anthropic.com",  model: "claude-3-5-sonnet-latest" },
+      openai: { base: "https://api.deepseek.com", model: "deepseek-chat" },
+      gemini: { base: "https://generativelanguage.googleapis.com", model: "gemini-2.5-flash" },
+      anthropic: { base: "https://api.anthropic.com", model: "claude-3-5-sonnet-latest" },
     };
 
     const STORAGE_KEY = "wenyan_history_v1";
@@ -316,8 +520,34 @@
       "合作方临时加条件，我想写一段拒绝对方又保留余地的话。"
     ];
 
+    let promptPlaceholder = "{{user_request}}";
+    const promptState = {
+      config: null,
+      selectedPromptId: "",
+      originalName: "",
+      originalContent: "",
+    };
+
+    function setStatus(text, type = "") {
+      els.status.textContent = text;
+      els.status.className = "status" + (type ? " " + type : "");
+    }
+
+    async function requestJson(url, options = {}) {
+      const res = await fetch(url, options);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "请求失败");
+      }
+      return data;
+    }
+
     function loadHistory() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        return [];
+      }
     }
 
     function saveHistory(list) {
@@ -370,42 +600,278 @@
       els.command.setSelectionRange(sample.length, sample.length);
       els.errorMsg.classList.remove("visible");
       els.errorMsg.textContent = "";
-      els.status.textContent = "已填入范例输入";
+      setStatus("已填入范例输入", "ok");
     }
 
     function applyPreset() {
-      const p = PRESETS[els.apiType.value];
-      if (p) { els.apiBase.value = p.base; els.model.value = p.model; }
+      const preset = PRESETS[els.apiType.value];
+      if (preset) {
+        els.apiBase.value = preset.base;
+        els.model.value = preset.model;
+      }
     }
 
     async function loadConfig() {
       try {
-        const res = await fetch("/api/config");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "加载失败");
+        const data = await requestJson("/api/config");
         if (data.api_type) els.apiType.value = data.api_type;
         if (data.api_base) els.apiBase.value = data.api_base;
         if (data.model) els.model.value = data.model;
         els.apiKey.placeholder = data.has_api_key ? "已保存 API Key；留空则沿用服务端配置" : "API Key";
-      } catch (e) {
+      } catch {
         applyPreset();
       }
     }
 
-    els.apiType.addEventListener("change", applyPreset);
+    function getPromptById(promptId) {
+      return promptState.config?.prompts?.find(item => item.id === promptId) || null;
+    }
 
+    function formatPromptOption(prompt) {
+      const tags = [];
+      if (prompt.id === promptState.config.default_prompt_id) tags.push("当前");
+      if (prompt.builtin) tags.push("内置");
+      return tags.length ? `${prompt.name}（${tags.join(" / ")}）` : prompt.name;
+    }
+
+    function updatePromptBadge() {
+      const active = promptState.config?.active_prompt;
+      const text = active ? `当前提示词：${active.name}${active.builtin ? "（内置）" : ""}` : "当前提示词：未加载";
+      els.activePromptName.textContent = text;
+      els.activePromptName.title = text;
+    }
+
+    function renderPromptHistory(selectedPromptId = "") {
+      const config = promptState.config;
+      if (!config) return;
+      els.promptHistory.innerHTML = "";
+      config.prompts.forEach(prompt => {
+        const opt = document.createElement("option");
+        opt.value = prompt.id;
+        opt.textContent = formatPromptOption(prompt);
+        els.promptHistory.appendChild(opt);
+      });
+      const fallback = selectedPromptId || config.default_prompt_id || config.prompts[0]?.id || "";
+      els.promptHistory.value = getPromptById(fallback) ? fallback : (config.prompts[0]?.id || "");
+    }
+
+    function syncPromptEditor(prompt) {
+      if (!prompt) return;
+      promptState.selectedPromptId = prompt.id;
+      promptState.originalName = prompt.name || "";
+      promptState.originalContent = prompt.content || "";
+      els.promptHistory.value = prompt.id;
+      els.promptName.value = prompt.name || "";
+      els.promptEditor.value = prompt.content || "";
+      els.deletePrompt.disabled = !!prompt.builtin;
+    }
+
+    function hasPromptDraftChanges() {
+      return (
+        (els.promptName.value || "") !== promptState.originalName ||
+        (els.promptEditor.value || "") !== promptState.originalContent
+      );
+    }
+
+    function confirmDiscardPromptChanges(message = "当前提示词有未保存修改，确认放弃吗？") {
+      return !hasPromptDraftChanges() || window.confirm(message);
+    }
+
+    function applyPromptConfig(config, selectedPromptId = "") {
+      promptState.config = config;
+      promptPlaceholder = config.user_placeholder || promptPlaceholder;
+      renderPromptHistory(selectedPromptId);
+      const prompt = getPromptById(els.promptHistory.value) || getPromptById(config.default_prompt_id) || config.prompts[0];
+      syncPromptEditor(prompt);
+      updatePromptBadge();
+      els.promptHelper.textContent = `建议保留占位符 ${promptPlaceholder} 指定用户输入插入位置；若删除，占位内容会自动追加到末尾。`;
+    }
+
+    async function loadPromptConfig(selectedPromptId = "") {
+      const data = await requestJson("/api/prompts");
+      applyPromptConfig(data, selectedPromptId);
+    }
+
+    function openPromptDialog() {
+      els.promptDialog.showModal();
+    }
+
+    function closePromptDialog() {
+      if (!confirmDiscardPromptChanges()) return false;
+      els.promptDialog.close();
+      return true;
+    }
+
+    async function savePrompt(createNew = false) {
+      const data = await requestJson("/api/prompts/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt_id: promptState.selectedPromptId,
+          name: els.promptName.value.trim(),
+          content: els.promptEditor.value,
+          create_new: createNew,
+        }),
+      });
+      applyPromptConfig(data.config, data.saved.prompt.id);
+      if (createNew || data.saved.action === "created") {
+        setStatus("已保存为新的默认提示词", "ok");
+      } else {
+        setStatus("提示词已更新并设为默认", "ok");
+      }
+    }
+
+    async function activatePrompt(promptId) {
+      if (!confirmDiscardPromptChanges("切换默认提示词会丢失当前未保存修改，确认继续吗？")) return;
+      const data = await requestJson("/api/prompts/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt_id: promptId || promptState.selectedPromptId }),
+      });
+      applyPromptConfig(data.config, data.active_prompt.id);
+      setStatus("已切换默认提示词", "ok");
+    }
+
+    async function deleteCurrentPrompt() {
+      const prompt = getPromptById(promptState.selectedPromptId);
+      if (!prompt || prompt.builtin) return;
+      if (!confirmDiscardPromptChanges("删除当前提示词会放弃未保存修改，确认继续吗？")) return;
+      const ok = window.confirm(`确认删除提示词“${prompt.name}”吗？`);
+      if (!ok) return;
+      const data = await requestJson("/api/prompts/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt_id: prompt.id }),
+      });
+      applyPromptConfig(data.config);
+      setStatus("已删除提示词", "ok");
+    }
+
+    async function restoreBuiltinPrompt() {
+      const builtin = promptState.config?.prompts?.find(item => item.builtin);
+      if (!builtin) return;
+      if (!confirmDiscardPromptChanges("恢复默认提示词会放弃当前未保存修改，确认继续吗？")) return;
+      await activatePrompt(builtin.id);
+      syncPromptEditor(builtin);
+    }
+
+    function resetPromptDraft() {
+      const prompt = getPromptById(promptState.selectedPromptId);
+      if (!prompt) return;
+      if (!confirmDiscardPromptChanges("重置编辑会撤销当前未保存修改，确认继续吗？")) return;
+      syncPromptEditor(prompt);
+      setStatus("已恢复到当前提示词内容", "");
+    }
+
+    els.apiType.addEventListener("change", applyPreset);
     els.exampleInput.addEventListener("click", fillExampleInput);
+
+    els.openPromptDialog.addEventListener("click", async () => {
+      try {
+        await loadPromptConfig();
+        openPromptDialog();
+      } catch (e) {
+        setStatus("提示词加载失败", "error");
+        els.errorMsg.textContent = "提示词加载失败：" + e.message;
+        els.errorMsg.classList.add("visible");
+      }
+    });
+
+    els.closePromptDialog.addEventListener("click", closePromptDialog);
+
+    els.promptDialog.addEventListener("cancel", event => {
+      if (!confirmDiscardPromptChanges()) {
+        event.preventDefault();
+      }
+    });
+
+    els.promptDialog.addEventListener("click", event => {
+      const rect = els.promptDialog.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+      if (!inside) closePromptDialog();
+    });
+
+    els.promptHistory.addEventListener("change", () => {
+      if (!confirmDiscardPromptChanges("切换历史提示词会丢失当前未保存修改，确认继续吗？")) {
+        els.promptHistory.value = promptState.selectedPromptId;
+        return;
+      }
+      const prompt = getPromptById(els.promptHistory.value);
+      syncPromptEditor(prompt);
+    });
+
+    window.addEventListener("beforeunload", event => {
+      if (els.promptDialog.open && hasPromptDraftChanges()) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+
+    els.savePrompt.addEventListener("click", async () => {
+      try {
+        await savePrompt(false);
+      } catch (e) {
+        setStatus("提示词保存失败", "error");
+        els.errorMsg.textContent = "提示词保存失败：" + e.message;
+        els.errorMsg.classList.add("visible");
+      }
+    });
+
+    els.duplicatePrompt.addEventListener("click", async () => {
+      try {
+        await savePrompt(true);
+      } catch (e) {
+        setStatus("提示词另存失败", "error");
+        els.errorMsg.textContent = "提示词另存失败：" + e.message;
+        els.errorMsg.classList.add("visible");
+      }
+    });
+
+    els.activatePrompt.addEventListener("click", async () => {
+      try {
+        await activatePrompt();
+      } catch (e) {
+        setStatus("切换提示词失败", "error");
+        els.errorMsg.textContent = "切换提示词失败：" + e.message;
+        els.errorMsg.classList.add("visible");
+      }
+    });
+
+    els.restoreBuiltinPrompt.addEventListener("click", async () => {
+      try {
+        await restoreBuiltinPrompt();
+      } catch (e) {
+        setStatus("恢复默认失败", "error");
+        els.errorMsg.textContent = "恢复默认失败：" + e.message;
+        els.errorMsg.classList.add("visible");
+      }
+    });
+
+    els.resetPromptDraft.addEventListener("click", resetPromptDraft);
+    els.deletePrompt.addEventListener("click", async () => {
+      try {
+        await deleteCurrentPrompt();
+      } catch (e) {
+        setStatus("删除提示词失败", "error");
+        els.errorMsg.textContent = "删除提示词失败：" + e.message;
+        els.errorMsg.classList.add("visible");
+      }
+    });
 
     els.send.addEventListener("click", async () => {
       const cmd = els.command.value.trim();
       if (!cmd) return;
       els.send.disabled = true;
-      els.status.textContent = "生成中...";
+      setStatus("生成中...");
       els.errorMsg.classList.remove("visible");
       els.errorMsg.textContent = "";
 
       try {
-        const res = await fetch("/api/generate", {
+        const data = await requestJson("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -416,22 +882,13 @@
             model: els.model.value,
           }),
         });
-        const data = await res.json();
-        if (data.error) {
-          els.errorMsg.textContent = data.error;
-          els.errorMsg.classList.add("visible");
-          els.status.textContent = "失败";
-          els.output.textContent = "";
-          addHistory(cmd, data.error, true);
-        } else {
-          els.output.textContent = data.output;
-          els.status.textContent = "完成";
-          addHistory(cmd, data.output, false);
-        }
+        els.output.textContent = data.output;
+        setStatus("完成", "ok");
+        addHistory(cmd, data.output, false);
       } catch (e) {
         els.errorMsg.textContent = "请求失败：" + e.message;
         els.errorMsg.classList.add("visible");
-        els.status.textContent = "请求失败";
+        setStatus("请求失败", "error");
         els.output.textContent = "";
         addHistory(cmd, "请求失败", true);
       } finally {
@@ -441,7 +898,7 @@
 
     els.saveConfig.addEventListener("click", async () => {
       try {
-        const res = await fetch("/api/config", {
+        const data = await requestJson("/api/config", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -451,10 +908,9 @@
             model: els.model.value,
           }),
         });
-        const data = await res.json();
-        els.status.textContent = data.saved && data.saved.length ? "已保存" : "保存失败";
-      } catch (e) {
-        els.status.textContent = "保存失败";
+        setStatus(data.saved && data.saved.length ? "已保存配置" : "无变更", "ok");
+      } catch {
+        setStatus("保存配置失败", "error");
       }
     });
 
@@ -492,11 +948,22 @@
     els.clearHistory.addEventListener("click", () => {
       localStorage.removeItem(STORAGE_KEY);
       renderHistory();
-      els.status.textContent = "历史已清空";
+      setStatus("历史已清空", "ok");
     });
 
-    loadConfig();
-    renderHistory();
+    async function init() {
+      await loadConfig();
+      try {
+        await loadPromptConfig();
+      } catch (e) {
+        setStatus("提示词未加载", "error");
+        els.activePromptName.textContent = "当前提示词：加载失败";
+        els.activePromptName.title = e.message;
+      }
+      renderHistory();
+    }
+
+    init();
   </script>
 </body>
 
