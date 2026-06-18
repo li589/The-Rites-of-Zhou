@@ -1,4 +1,4 @@
-# wenyan-web
+# The Rites of Zhou（wenyan-web）
 
 一个轻量的本地 Web 小工具：输入现代语境下想表达的话，让大模型生成带有古意、但仍然适合直接发送的中文回应。
 
